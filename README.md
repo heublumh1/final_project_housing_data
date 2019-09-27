@@ -7,4 +7,4 @@ This dataset contains house sale prices for King County, which includes Seattle.
 
 It's a great dataset for evaluating simple regression models.
 
-
+Predict house price using regression.
