@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Street View Side-By-Side</title>
+    <style>
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+      #map, #pano {
+        float: left;
+        height: 100%;
+        width: 50%;
+      }
+    </style>
+        <script src="https://d3js.org/d3.v5.min.js"></script>
+  </head>
+  <body>
+    <div id="map"></div>
+    <div id="pano"></div>
+    <script>
+    function initialize() {
+
+    var API_KEY = ""
+// Use D3 to import CSV  
+    d3.csv("final_predicted_table.csv").then(function(data) {
+        data.forEach(function(d) {
+  });
+        console.log(data[0]);
+// Map CSV data
+      var filteredData =  
+      data.map(data => { return {
+          location: [+data.lat, +data.long],
+          date_sold: data.date,
+          predicted_price: data.predicted,
+          sale_price: data.price}});
+        console.log(filteredData)
+// Create map
+        var map = new google.maps.Map(document.getElementById('map'), {
+       center: {lat: 47.5333, lng: -122.15100000000001},
+        zoom: 10
+        });
+
+// When initialized, create markers for different values and then on click event, render panorama view
+        for (var i = 0; i < filteredData.length; i++) {
+            var marker = new google.maps.Marker({
+            position: new google.maps.LatLng(filteredData[i].location[0],filteredData[i].location[1]),
+            title: 'Date Sold: ' + filteredData[i].date_sold + "\n" + 'Predicted Price: ' + filteredData[i].predicted_price + "\n" +'Sale Price: ' + filteredData[i].sale_price,
+            map: map, clickable: true
+          });
+          marker.addListener('click', function(evt) {
+            var latLon = evt.latLng.toJSON()
+            // console.log(latLon)
+            var panorama = new google.maps.StreetViewPanorama(
+            document.getElementById('pano'), {
+              position: latLon,
+              pov: {
+                heading: 34,
+                pitch: 10
+              },
+              motionTracking: false,
+              motionTrackingControl: false
+            });
+        map.setStreetView(panorama);
+        });
+        };
+      })
+}   
+    </script>
+    <script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=API_KEY&callback=initialize">
+        //  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCX9yIZ0ymeM91Oi-dYL7TI-rZUfSdBXOM&callback=initialize">
+    </script>
+  </body>
+</html>
